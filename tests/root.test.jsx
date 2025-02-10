@@ -6,8 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 describe("Root page", () => {
   test("Shows page name", () => {
     render(<Root></Root>, { wrapper: BrowserRouter });
-    expect(screen.getByRole("heading", { value: "MockShop" }))
-      .toBeInTheDocument;
+    expect(screen.getByRole("heading", { name: "MockShop" })).toBeInTheDocument;
   });
   test("Displays Home link", () => {
     render(<Root></Root>, { wrapper: BrowserRouter });

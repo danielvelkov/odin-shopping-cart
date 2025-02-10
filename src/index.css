@@ -12,12 +12,12 @@
 }
 
 a {
+  color: #484c7a;
   font-weight: 600;
-  color: #5a5e9a;
   text-decoration: inherit;
 }
 a:hover {
-  color: #484c7a;
+  color: #5a5e9a;
 }
 
 body {
