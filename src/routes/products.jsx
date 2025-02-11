@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { getProducts } from "/src/products";
 import ProductCard from "/src/components/productCard";
 import styled from "styled-components";
@@ -10,6 +10,7 @@ export async function loader() {
 }
 
 const Products = () => {
+  const navigate = useNavigate();
   const { products } = useLoaderData();
   return (
     <>
@@ -34,7 +35,10 @@ const Products = () => {
       {products.length ? (
         <CardList>
           {products.map((product) => (
-            <li key={product.id}>
+            <li
+              key={product.id}
+              onClick={() => navigate("/products/" + product.id)}
+            >
               <ProductCard product={product}></ProductCard>
             </li>
           ))}

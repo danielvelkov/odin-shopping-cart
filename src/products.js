@@ -24,8 +24,6 @@ export async function getProduct(id) {
       statusText: response.statusText,
     });
 
-  if (!response.data) return {};
-
   let product = await response.json();
   return product;
 }
