@@ -1,17 +1,10 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import StarRating from "./starRating";
 
 const ProductCard = ({ product }) => {
   const { title, price, rating, description, image } = product;
   const { rate, count } = rating;
-
-  const starRating = [...Array(5)].map((r, i) => {
-    let starIcon;
-    if (i + 1 <= rate) starIcon = <i key={i} className="fa fa-star"></i>;
-    else if (i + 1 > rate && i + 1 == Math.ceil(rate))
-      starIcon = <i key={i} className="fa fa-star-half"></i>;
-    return starIcon;
-  });
 
   return (
     <Card>
@@ -20,8 +13,7 @@ const ProductCard = ({ product }) => {
       </div>
       <div className="card-info">
         <h4 className="title">{title}</h4>
-        <span className="sub-title">{starRating}</span>
-        <span className="muted">({count})</span>
+        <StarRating rating={rate} votes={count}></StarRating>
         <p className="text-body">{description}</p>
       </div>
       <div className="card-footer">
@@ -52,20 +44,11 @@ export const Card = styled.article`
     0 1px 3px rgba(0, 0, 0, 0.12),
     0 1px 2px rgba(0, 0, 0, 0.24);
 
-  .muted {
-    color: #a3a4b4;
-  }
-
   .title {
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3; /* number of lines to show */
     -webkit-box-orient: vertical;
-  }
-
-  .sub-title {
-    color: orange;
-    text-shadow: 1px 1px 2px gray;
   }
 
   .card-img {
