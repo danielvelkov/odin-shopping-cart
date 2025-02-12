@@ -37,6 +37,8 @@ const Root = () => {
 const Navbar = styled.nav`
   display: flex;
   gap: 2em;
+  font-size: 1.5em;
+  flex-wrap: wrap;
 `;
 
 const Header = styled.header`
@@ -62,6 +64,10 @@ const Header = styled.header`
     img {
       height: 100%;
     }
+  }
+
+  @media screen and (max-width: 520px) {
+    flex-direction: column;
   }
 `;
 

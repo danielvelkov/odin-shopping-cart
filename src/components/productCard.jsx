@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import StarRating from "./starRating";
+import { USDollar } from "../utils/priceFormatter";
 
 const ProductCard = ({ product }) => {
   const { title, price, rating, description, image } = product;
@@ -17,7 +18,7 @@ const ProductCard = ({ product }) => {
         <p className="text-body">{description}</p>
       </div>
       <div className="card-footer">
-        <span className="text-title">{price}$</span>
+        <span className="text-title">{USDollar.format(price)}</span>
         <div className="card-buttons">
           <button className="card-button">
             Add to cart
@@ -117,6 +118,16 @@ export const Card = styled.article`
   /* Favorite */
   .favorite {
     color: red;
+  }
+
+  /* On hover */
+  &:hover,
+  &:focus {
+    color: #2033a1ae;
+    cursor: pointer;
+    .card-img {
+      transform: scale(1.1);
+    }
   }
 `;
 

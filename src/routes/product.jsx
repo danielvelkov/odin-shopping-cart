@@ -1,7 +1,8 @@
 import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import { getProduct } from "src/products";
-import StarRating from "../components/starRating";
+import StarRating from "src/components/starRating";
+import { USDollar } from "src/utils/priceFormatter";
 
 export async function loader({ params }) {
   const product = await getProduct(params.productId);
@@ -19,7 +20,7 @@ const Product = () => {
       </div>
       <div className="product-info">
         <h2>{product.title}</h2>
-        <span className="product-price">{product.price}$</span>
+        <span className="product-price">{USDollar.format(product.price)}</span>
         <StarRating rating={rate} votes={count}></StarRating>
         <p>{product.description}</p>
         <div className="button-list">
