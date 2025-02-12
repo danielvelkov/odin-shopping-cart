@@ -3,9 +3,11 @@ import shopLogo from "/src/assets/online-shop-svgrepo-com.svg";
 import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import CartContext from "/src/contexts/cartContext";
+import FavoritesContext from "/src/contexts/favoritesContext";
 
 const Root = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   return (
     <>
@@ -24,18 +26,23 @@ const Root = () => {
           <StyledLink to={"/cart"}>
             <i className="fa fa-shopping-cart"></i>
             {cartItems.length > 0 && (
-              <div className="cart-items-count">{cartItems.length}</div>
+              <div className="items-count-bubble">{cartItems.length}</div>
             )}
           </StyledLink>
-          <Link to={"/favorites"}>
-            <i className="fa fa-heart"></i>
-          </Link>
+          <StyledLink to={"/favorites"}>
+            <i className="fas fa-heart"></i>
+            {favorites.length > 0 && (
+              <div className="items-count-bubble">{favorites.length}</div>
+            )}
+          </StyledLink>
         </Navbar>
       </Header>
       <Sidebar></Sidebar>
       <Main>
         <CartContext.Provider value={{ cartItems, setCartItems }}>
-          <Outlet></Outlet>
+          <FavoritesContext value={{ favorites, setFavorites }}>
+            <Outlet></Outlet>
+          </FavoritesContext>
         </CartContext.Provider>
       </Main>
       <Footer></Footer>
@@ -45,7 +52,7 @@ const Root = () => {
 
 const StyledLink = styled(Link)`
   position: relative;
-  .cart-items-count {
+  .items-count-bubble {
     position: absolute;
     left: 1.3em;
     top: 1.4em;

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import StarRating from "./starRating";
 import AddToCartButton from "./addToCartButton";
 import { USDollar } from "../utils/priceFormatter";
+import AddToFavoritesButton from "./addToFavoritesButton";
 
 const ProductCard = ({ product }) => {
   const { id, title, price, rating, description, image } = product;
@@ -22,9 +23,10 @@ const ProductCard = ({ product }) => {
         <span className="text-title">{USDollar.format(price)}</span>
         <div className="card-buttons">
           <AddToCartButton className={"card-button"} id={id}></AddToCartButton>
-          <button className="card-button favorite">
-            <i className="far fa-heart"></i>
-          </button>
+          <AddToFavoritesButton
+            className={"card-button favorite"}
+            id={id}
+          ></AddToFavoritesButton>
         </div>
       </div>
     </Card>

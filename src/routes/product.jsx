@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { getProduct } from "src/products";
 import StarRating from "src/components/starRating";
 import AddToCartButton from "src/components/addToCartButton";
+import AddToFavoritesButton from "src/components/addToFavoritesButton";
 import { USDollar } from "src/utils/priceFormatter";
 
 export async function loader({ params }) {
@@ -26,9 +27,7 @@ const Product = () => {
         <p>{product.description}</p>
         <div className="button-list">
           <AddToCartButton id={product.id}></AddToCartButton>
-          <button>
-            Add to favorites <i className="fa fa-heart"></i>
-          </button>
+          <AddToFavoritesButton id={product.id}></AddToFavoritesButton>
         </div>
       </div>
     </ProductWrapper>
