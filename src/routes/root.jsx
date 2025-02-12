@@ -1,8 +1,12 @@
+import { useState } from "react";
 import shopLogo from "/src/assets/online-shop-svgrepo-com.svg";
 import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
+import CartContext from "/src/contexts/cartContext";
 
 const Root = () => {
+  const [cartItems, setCartItems] = useState([]);
+
   return (
     <>
       <Header>
@@ -17,9 +21,12 @@ const Root = () => {
           <Link to={"/products"}>
             Products <i className="fa"></i>
           </Link>
-          <Link to={"/cart"}>
+          <StyledLink to={"/cart"}>
             <i className="fa fa-shopping-cart"></i>
-          </Link>
+            {cartItems.length > 0 && (
+              <div className="cart-items-count">{cartItems.length}</div>
+            )}
+          </StyledLink>
           <Link to={"/favorites"}>
             <i className="fa fa-heart"></i>
           </Link>
@@ -27,12 +34,30 @@ const Root = () => {
       </Header>
       <Sidebar></Sidebar>
       <Main>
-        <Outlet></Outlet>
+        <CartContext.Provider value={{ cartItems, setCartItems }}>
+          <Outlet></Outlet>
+        </CartContext.Provider>
       </Main>
       <Footer></Footer>
     </>
   );
 };
+
+const StyledLink = styled(Link)`
+  position: relative;
+  .cart-items-count {
+    position: absolute;
+    left: 1.3em;
+    top: 1.4em;
+    background-color: aliceblue;
+    border: 2px solid #484c7a;
+    border-radius: 50%;
+    line-height: 1.5em;
+    width: 1.5em;
+    font-size: 0.6em;
+    text-align: center;
+  }
+`;
 
 const Navbar = styled.nav`
   display: flex;

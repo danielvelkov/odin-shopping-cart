@@ -37,7 +37,10 @@ const Products = () => {
           {products.map((product) => (
             <li
               key={product.id}
-              onClick={() => navigate("/products/" + product.id)}
+              onClick={(e) => {
+                if (e.target.matches("button, button *")) return;
+                else navigate("/products/" + product.id);
+              }}
             >
               <ProductCard product={product}></ProductCard>
             </li>

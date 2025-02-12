@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import { getProduct } from "src/products";
 import StarRating from "src/components/starRating";
+import AddToCartButton from "src/components/addToCartButton";
 import { USDollar } from "src/utils/priceFormatter";
 
 export async function loader({ params }) {
@@ -24,9 +25,7 @@ const Product = () => {
         <StarRating rating={rate} votes={count}></StarRating>
         <p>{product.description}</p>
         <div className="button-list">
-          <button>
-            Add to cart <i className="fa fa-shopping-cart"></i>
-          </button>
+          <AddToCartButton id={product.id}></AddToCartButton>
           <button>
             Add to favorites <i className="fa fa-heart"></i>
           </button>

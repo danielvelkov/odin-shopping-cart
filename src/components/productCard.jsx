@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import StarRating from "./starRating";
+import AddToCartButton from "./addToCartButton";
 import { USDollar } from "../utils/priceFormatter";
 
 const ProductCard = ({ product }) => {
-  const { title, price, rating, description, image } = product;
+  const { id, title, price, rating, description, image } = product;
   const { rate, count } = rating;
 
   return (
@@ -20,10 +21,7 @@ const ProductCard = ({ product }) => {
       <div className="card-footer">
         <span className="text-title">{USDollar.format(price)}</span>
         <div className="card-buttons">
-          <button className="card-button">
-            Add to cart
-            <i className="fa fa-shopping-cart"></i>
-          </button>
+          <AddToCartButton className={"card-button"} id={id}></AddToCartButton>
           <button className="card-button favorite">
             <i className="far fa-heart"></i>
           </button>
@@ -133,9 +131,10 @@ export const Card = styled.article`
 
 ProductCard.propTypes = {
   product: PropTypes.shape({
-    title: PropTypes.string,
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
     description: PropTypes.string,
-    price: PropTypes.number,
+    price: PropTypes.number.isRequired,
     image: PropTypes.string,
     rating: PropTypes.shape({
       rate: PropTypes.number,
