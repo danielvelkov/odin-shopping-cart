@@ -6,7 +6,7 @@ import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
 
 const Root = () => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState([1, 2]);
   const [favorites, setFavorites] = useState([]);
 
   return (
