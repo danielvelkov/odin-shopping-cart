@@ -7,13 +7,15 @@ import { Link } from "react-router-dom";
 
 // Claude AI generated this from two sentences and a snippet. WOW O_o
 const Cart = () => {
-  const { cartItems: cartItemsIds, setCartItems } = useContext(CartContext);
+  const { cartItems, setCartItems } = useContext(CartContext);
   const [productsCache, setProductsCache] = useState(new Map());
 
   // Fetch only missing products
   useEffect(() => {
     const fetchMissingProducts = async () => {
-      const missingIds = cartItemsIds.filter((id) => !productsCache.has(id));
+      const missingIds = [...cartItems]
+        .filter(([key]) => !productsCache.has(key))
+        .map(([key]) => key);
 
       if (missingIds.length === 0) return;
 
@@ -30,33 +32,57 @@ const Cart = () => {
           return newCache;
         });
       } catch (error) {
-        console.error("Error fetching products:", error);
+        throw new Error("Error fetching products:", error);
       }
     };
 
     fetchMissingProducts();
-  }, [cartItemsIds, productsCache]);
+  }, [cartItems]);
 
-  // Memoize the listed items based on cartItemsIds and productCache
+  // Memoize the listed items with their quantities
   const listedItems = useMemo(() => {
-    return cartItemsIds.map((id) => productsCache.get(id)).filter(Boolean); // Remove any undefined items
-  }, [cartItemsIds, productsCache]);
+    return [...cartItems]
+      .map(([key, cartItem]) => ({
+        ...productsCache.get(key),
+        quantity: cartItem.quantity,
+      }))
+      .filter(Boolean);
+  }, [cartItems, productsCache]);
 
-  // Memoize the item renderer to prevent unnecessary re-renders
+  const handleQuantityChange = useCallback(
+    (productId, newQuantity) => {
+      setCartItems((prev) =>
+        new Map(prev).set(productId, {
+          ...prev.get(productId),
+          quantity: Number(newQuantity),
+        }),
+      );
+    },
+    [setCartItems],
+  );
+
+  const handleRemoveItem = useCallback(
+    (productId) => {
+      setCartItems(
+        (prev) => new Map([...prev].filter(([id]) => productId !== id)),
+      );
+    },
+    [setCartItems],
+  );
+
+  // Memoize the item renderer
   const renderCartItem = useCallback(
-    (product) => (
-      <tr className="cart-item" key={product.id}>
+    (item) => (
+      <tr className="cart-item" key={item.id}>
         <td>
           <div className="product-details">
             <div className="image-container">
-              <img src={product.image} alt={product.title} />
+              <img src={item.image} alt={item.title} />
             </div>
             <div className="product-info">
-              <h4>{product.title}</h4>
+              <h4>{item.title}</h4>
               <button
-                onClick={() =>
-                  setCartItems((prev) => prev.filter((id) => product.id !== id))
-                }
+                onClick={() => handleRemoveItem(item.id)}
                 className="remove-button"
               >
                 Remove
@@ -66,21 +92,46 @@ const Cart = () => {
           </div>
         </td>
         <td>
-          <span className="price">{USDollar.format(product.price)}</span>
+          <span className="price">{USDollar.format(item.price)}</span>
         </td>
         <td>
           <div className="quantity-controls">
-            <button className="quantity-btn">-</button>
-            <input type="number" min="1" defaultValue={1}></input>
-            <button className="quantity-btn">+</button>
+            <button
+              className="quantity-btn"
+              onClick={() =>
+                handleQuantityChange(item.id, Math.max(1, item.quantity - 1))
+              }
+            >
+              -
+            </button>
+            <input
+              type="number"
+              min="1"
+              value={item.quantity}
+              onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+            />
+            <button
+              className="quantity-btn"
+              onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+            >
+              +
+            </button>
           </div>
         </td>
         <td>
-          <span className="subtotal">{USDollar.format(product.price)}</span>
+          <span className="subtotal">
+            {USDollar.format(item.price * item.quantity)}
+          </span>
         </td>
       </tr>
     ),
-    [],
+    [handleQuantityChange, handleRemoveItem],
+  );
+
+  const total = useMemo(
+    () =>
+      listedItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [listedItems],
   );
 
   return (
@@ -107,11 +158,7 @@ const Cart = () => {
                 <th scope="row" colSpan="3">
                   Total
                 </th>
-                <td>
-                  {USDollar.format(
-                    listedItems.reduce((acc, cur) => acc + cur.price, 0),
-                  )}
-                </td>
+                <td>{USDollar.format(total)}</td>
               </tr>
             </tfoot>
           </CartItemsTable>
