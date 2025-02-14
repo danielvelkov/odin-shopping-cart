@@ -6,7 +6,9 @@ import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
 
 const Root = () => {
-  const [cartItems, setCartItems] = useState([1, 2]);
+  const [cartItems, setCartItems] = useState(
+    new Map().set(1, { quantity: 2 }).set(2, { quantity: 1 }),
+  );
   const [favorites, setFavorites] = useState([]);
 
   return (
@@ -25,8 +27,8 @@ const Root = () => {
           </Link>
           <StyledLink to={"/cart"}>
             <i className="fa fa-shopping-cart"></i>
-            {cartItems.length > 0 && (
-              <div className="items-count-bubble">{cartItems.length}</div>
+            {cartItems.size > 0 && (
+              <div className="items-count-bubble">{cartItems.size}</div>
             )}
           </StyledLink>
           <StyledLink to={"/favorites"}>
