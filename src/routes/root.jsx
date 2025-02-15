@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import shopLogo from "/src/assets/online-shop-svgrepo-com.svg";
 import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
@@ -6,10 +6,8 @@ import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
 
 const Root = () => {
-  const [cartItems, setCartItems] = useState(
-    new Map().set(1, { quantity: 2 }).set(2, { quantity: 1 }),
-  );
   const [favorites, setFavorites] = useState([]);
+  const { cartItems } = useContext(CartContext);
 
   return (
     <>
@@ -41,11 +39,9 @@ const Root = () => {
       </Header>
       <Sidebar></Sidebar>
       <Main>
-        <CartContext.Provider value={{ cartItems, setCartItems }}>
-          <FavoritesContext value={{ favorites, setFavorites }}>
-            <Outlet></Outlet>
-          </FavoritesContext>
-        </CartContext.Provider>
+        <FavoritesContext value={{ favorites, setFavorites }}>
+          <Outlet></Outlet>
+        </FavoritesContext>
       </Main>
       <Footer></Footer>
     </>

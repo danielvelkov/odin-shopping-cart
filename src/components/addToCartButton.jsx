@@ -1,19 +1,13 @@
 import { useContext } from "react";
 import CartContext from "src/contexts/cartContext";
 import PropTypes from "prop-types";
+import CartActions from "../contexts/action-types/cartActions";
 
 const AddToCartButton = ({ id, className }) => {
-  const { setCartItems } = useContext(CartContext);
+  const { dispatch } = useContext(CartContext);
 
   const handleClick = () => {
-    setCartItems((prev) => {
-      if (id && !prev.has(id)) return new Map(prev).set(id, { quantity: 1 });
-      else if (prev.has(id))
-        return new Map(prev).set(id, {
-          ...prev.get(id),
-          quantity: prev.get(id).quantity + 1,
-        });
-    });
+    dispatch({ type: CartActions.ADD, id });
   };
   return (
     <button className={className} onClick={handleClick}>

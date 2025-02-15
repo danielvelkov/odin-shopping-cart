@@ -4,10 +4,11 @@ import CartContext from "src/contexts/cartContext";
 import { getProduct } from "src/products.js";
 import { USDollar } from "../utils/priceFormatter";
 import { Link } from "react-router-dom";
+import CartActions from "../contexts/action-types/cartActions";
 
 // Claude AI generated this from two sentences and a snippet. WOW O_o
 const Cart = () => {
-  const { cartItems, setCartItems } = useContext(CartContext);
+  const { cartItems, dispatch } = useContext(CartContext);
   const [productsCache, setProductsCache] = useState(new Map());
 
   // Fetch only missing products
@@ -44,30 +45,23 @@ const Cart = () => {
     return [...cartItems]
       .map(([key, cartItem]) => ({
         ...productsCache.get(key),
-        quantity: cartItem.quantity,
+        ...cartItem,
       }))
       .filter(Boolean);
   }, [cartItems, productsCache]);
 
   const handleQuantityChange = useCallback(
     (productId, newQuantity) => {
-      setCartItems((prev) =>
-        new Map(prev).set(productId, {
-          ...prev.get(productId),
-          quantity: Number(newQuantity),
-        }),
-      );
+      dispatch({ type: CartActions.UPDATE, id: productId, newQuantity });
     },
-    [setCartItems],
+    [dispatch],
   );
 
   const handleRemoveItem = useCallback(
     (productId) => {
-      setCartItems(
-        (prev) => new Map([...prev].filter(([id]) => productId !== id)),
-      );
+      dispatch({ type: CartActions.REMOVE, id: productId });
     },
-    [setCartItems],
+    [dispatch],
   );
 
   // Memoize the item renderer
@@ -152,7 +146,12 @@ const Cart = () => {
                 <th>Subtotal</th>
               </tr>
             </thead>
-            <tbody>{listedItems.map(renderCartItem)}</tbody>
+            <tbody>
+              {listedItems.map((item) => {
+                // for some reason listedItems has undefined items inside in the beginning
+                if (item.id) return renderCartItem(item);
+              })}
+            </tbody>
             <tfoot>
               <tr>
                 <th scope="row" colSpan="3">
@@ -167,12 +166,12 @@ const Cart = () => {
           </button>
         </>
       ) : (
-        <>
+        <section className="empty-shopping-cart">
           <h2>
             Your shopping cart is empty<br></br>
             Check out our <Link to={"/products"}>Products</Link>
           </h2>
-        </>
+        </section>
       )}
     </CartPage>
   );
@@ -217,6 +216,13 @@ const CartPage = styled.div`
       background-color: #ffa600d3;
     }
   }
+
+  .empty-shopping-cart {
+    padding: 2em;
+    border-radius: 2em;
+    background-color: white;
+    text-align: center;
+  }
 `;
 
 const CartItemsTable = styled.table`
@@ -238,6 +244,7 @@ const CartItemsTable = styled.table`
     font-weight: 500;
     color: #666;
     background-color: #f0f8ff;
+    min-width: 10ch;
   }
 
   .cart-item {
