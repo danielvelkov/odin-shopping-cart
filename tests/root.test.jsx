@@ -1,29 +1,31 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import Root from "../src/routes/root";
-import { BrowserRouter } from "react-router-dom";
-import CartProvider from "src/contexts/cartProvider";
+import { createRoutesStub } from "react-router-dom";
+import CartProvider from "../src/contexts/cartProvider";
 
-const customRender = (ui, renderOptions) => {
-  return render(
-    <CartProvider>
-      <BrowserRouter>{ui}</BrowserRouter>
-    </CartProvider>,
-    renderOptions,
-  );
-};
+const Stub = createRoutesStub([
+  {
+    path: "/",
+    Component: () => (
+      <CartProvider>
+        <Root></Root>
+      </CartProvider>
+    ),
+  },
+]);
 
 describe("Root page", () => {
   test("Shows page name", () => {
-    customRender(<Root></Root>);
+    render(<Stub></Stub>);
     expect(screen.getByRole("heading", { name: "MockShop" })).toBeInTheDocument;
   });
   test("Displays Home link", () => {
-    customRender(<Root></Root>);
+    render(<Stub></Stub>);
     expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument;
   });
   test("Displays Products link", () => {
-    customRender(<Root></Root>);
+    render(<Stub></Stub>);
     expect(screen.getByRole("link", { name: "Products" })).toBeInTheDocument;
   });
 });

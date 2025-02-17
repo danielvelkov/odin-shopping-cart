@@ -36,8 +36,9 @@ function cartReducer(prevCartItems, action) {
   }
 }
 
-const CartProvider = ({ children }) => {
-  const [cartItems, dispatch] = useReducer(cartReducer, new Map());
+const CartProvider = ({ children, value }) => {
+  const defaultValue = new Map();
+  const [cartItems, dispatch] = useReducer(cartReducer, value || defaultValue);
 
   return (
     <CartContext.Provider value={{ cartItems, dispatch }}>
@@ -48,6 +49,7 @@ const CartProvider = ({ children }) => {
 
 CartProvider.propTypes = {
   children: PropTypes.array,
+  value: PropTypes.instanceOf(Map),
 };
 
 export default CartProvider;

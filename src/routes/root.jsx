@@ -23,13 +23,13 @@ const Root = () => {
           <Link to={"/products"}>
             Products <i className="fa"></i>
           </Link>
-          <StyledLink to={"/cart"}>
+          <StyledLink to={"/cart"} aria-label="Shopping Cart">
             <i className="fa fa-shopping-cart"></i>
             {cartItems.size > 0 && (
               <div className="items-count-bubble">{cartItems.size}</div>
             )}
           </StyledLink>
-          <StyledLink to={"/favorites"}>
+          <StyledLink to={"/favorites"} aria-label="Favorites">
             <i className="fas fa-heart"></i>
             {favorites.length > 0 && (
               <div className="items-count-bubble">{favorites.length}</div>

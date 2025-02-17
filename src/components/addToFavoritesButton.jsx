@@ -11,7 +11,11 @@ const AddToFavoritesButton = ({ id, className }) => {
     else setFavorites([...favorites, id]);
   };
   return (
-    <button className={className} onClick={handleClick}>
+    <button
+      className={className}
+      onClick={handleClick}
+      aria-label="Add to favorites"
+    >
       {favorites.includes(id) ? (
         <i className="fas fa-heart"></i>
       ) : (
