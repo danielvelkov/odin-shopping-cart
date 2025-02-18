@@ -47,6 +47,7 @@ Here are the available scripts in this project:
 - `lint`: Run ESLint to lint the project.
 - `preview`: Preview the production build.
 - `test`: Run tests using Vitest.
+- `test:ui`: Run tests using Vitest and report them in the browser.
 - `prepare`: Prepare Husky hooks.
 
 ## Dependencies

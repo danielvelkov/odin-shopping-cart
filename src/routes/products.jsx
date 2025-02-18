@@ -50,7 +50,13 @@ const Products = () => {
         <CardList>
           {products.map((product) => (
             <li
+              aria-label={product.title + " product"}
+              role="link"
+              tabIndex={0}
               key={product.id}
+              onKeyDown={(e) =>
+                e.key === "Enter" ? navigate("/products/" + product.id) : true
+              }
               onClick={(e) => {
                 if (e.target.matches("button, button *")) return;
                 else navigate("/products/" + product.id);
