@@ -1,36 +1,50 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { Form, useLoaderData, useNavigate } from "react-router-dom";
 import { getProducts } from "/src/products";
 import ProductCard from "/src/components/productCard";
 import styled from "styled-components";
 import { Card } from "../components/productCard";
+import { useEffect } from "react";
 
-export async function loader() {
-  const products = await getProducts();
-  return { products };
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q");
+  const products = await getProducts(query);
+  return { products, query };
 }
 
 const Products = () => {
   const navigate = useNavigate();
-  const { products } = useLoaderData();
+  const { products, query } = useLoaderData();
+
+  useEffect(() => {
+    document.getElementById("q").value = query;
+  }, [query]);
+
   return (
     <>
       <h2>Products</h2>
       <SearchBar>
-        <form id="product-search" role="search">
+        <Form id="product-search">
           <input
             id="q"
             aria-label="Search products"
             placeholder="Search"
             type="search"
             name="q"
+            defaultValue={query}
           />
           <div id="search-spinner" aria-hidden hidden={true} />
-        </form>
-        <form method="post">
           <button type="submit">
             <i className="fa fa-search"></i>
           </button>
-        </form>
+        </Form>
+        <div className="search-results">
+          {products.length
+            ? products.length === 1
+              ? "1 result"
+              : `${products.length} results`
+            : "no results found"}
+        </div>
       </SearchBar>
       {products.length ? (
         <CardList>
@@ -47,7 +61,10 @@ const Products = () => {
           ))}
         </CardList>
       ) : (
-        "No products available yet"
+        <>
+          <h2>No results for &quot;{query}&quot;</h2>
+          <p>Check the spelling or try a more general search term.</p>
+        </>
       )}
     </>
   );
@@ -70,6 +87,7 @@ const CardList = styled.ul`
 const SearchBar = styled.div`
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 0.5em;
 
   form input[type="search"] {
@@ -77,6 +95,9 @@ const SearchBar = styled.div`
     padding: 0.5em 1em;
     border-radius: 1em;
     border: 1px solid gray;
+    &:hover {
+      box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
+    }
   }
 
   form button[type="submit"] {
@@ -85,5 +106,10 @@ const SearchBar = styled.div`
     cursor: pointer;
     background-color: transparent;
     border: none;
+    margin-left: -3em;
+  }
+
+  .search-results {
+    color: #666;
   }
 `;
