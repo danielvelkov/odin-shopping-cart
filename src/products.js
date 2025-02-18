@@ -11,7 +11,10 @@ export async function getProducts(query) {
   if (!products) products = [];
 
   if (query)
-    products = matchSorter(products, query, { keys: ["title", "description"] });
+    products = matchSorter(products, query, {
+      keys: ["title"],
+      threshold: matchSorter.rankings.CONTAINS,
+    });
 
   return products;
 }
