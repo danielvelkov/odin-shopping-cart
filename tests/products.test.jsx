@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { mockProducts } from "../tests/mockProducts";
 import CartProvider from "src/contexts/cartProvider";
 import Products from "src/routes/products";
@@ -52,7 +52,9 @@ describe("Products page", () => {
 
   test("Shows the available products", async () => {
     render(<ProductsStub initialEntries={["/products"]}></ProductsStub>);
-    const productItems = await screen.findAllByRole("listitem");
+    const productList = await screen.findByRole("list");
+    const productItems =
+      await within(productList).findAllByLabelText(/product/i);
     expect(productItems).toHaveLength(mockProducts.length);
   });
 
@@ -82,7 +84,7 @@ describe("Products page", () => {
   });
 
   // i don't think this is a unit test. More like an integration test. Also how can you tell if its on the
-  // product page
+  // product page. This is bull
   test("Clicking on a product navigates to that product's page", async () => {
     render(<ProductsStub initialEntries={["/products"]}></ProductsStub>);
     const user = userEvent.setup();
