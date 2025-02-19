@@ -4,6 +4,7 @@ import ProductCard from "/src/components/productCard";
 import styled from "styled-components";
 import { Card } from "../components/productCard";
 import { useEffect } from "react";
+import { getProductsByCategory } from "../products";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
@@ -12,12 +13,17 @@ export async function loader({ request }) {
   return { products, query };
 }
 
+export async function categoryProductsLoader({ params }) {
+  const products = await getProductsByCategory(params.category);
+  return { products };
+}
+
 const Products = () => {
   const navigate = useNavigate();
   const { products, query } = useLoaderData();
 
   useEffect(() => {
-    document.getElementById("q").value = query;
+    document.getElementById("q").value = query || "";
   }, [query]);
 
   return (
@@ -31,7 +37,7 @@ const Products = () => {
             placeholder="Search"
             type="search"
             name="q"
-            defaultValue={query}
+            defaultValue={query || ""}
           />
           <div id="search-spinner" aria-hidden hidden={true} />
           <button type="submit">

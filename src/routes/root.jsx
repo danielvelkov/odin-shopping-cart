@@ -4,13 +4,14 @@ import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
+import CategoriesList from "../components/categoriesList";
 
 const Root = () => {
   const [favorites, setFavorites] = useState([]);
   const { cartItems } = useContext(CartContext);
 
   return (
-    <>
+    <RootLayout>
       <Header>
         <Link to={"/"}>
           <span className="logo">
@@ -37,16 +38,30 @@ const Root = () => {
           </StyledLink>
         </Navbar>
       </Header>
-      <Sidebar></Sidebar>
+      <Sidebar>
+        <CategoriesList></CategoriesList>
+      </Sidebar>
       <Main>
         <FavoritesContext value={{ favorites, setFavorites }}>
           <Outlet></Outlet>
         </FavoritesContext>
       </Main>
       <Footer></Footer>
-    </>
+    </RootLayout>
   );
 };
+
+const RootLayout = styled.section`
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: minmax(auto, 100px) 3fr 3fr minmax(auto, 100px);
+  grid-template-columns: 1fr 3fr 3fr 1fr;
+  grid-template-areas:
+    "header header header header"
+    "aside main main ."
+    "aside main main ."
+    "footer footer footer footer ";
+`;
 
 const StyledLink = styled(Link)`
   position: relative;
@@ -72,6 +87,8 @@ const Navbar = styled.nav`
 `;
 
 const Header = styled.header`
+  position: relative;
+  grid-area: header;
   background-color: aliceblue;
   padding: 1em 3em;
   display: flex;
@@ -101,12 +118,21 @@ const Header = styled.header`
   }
 `;
 
-const Sidebar = styled.aside``;
+const Sidebar = styled.aside`
+  grid-area: aside;
+  background-color: #f9fafb;
+  height: 100%;
+`;
 
 const Main = styled.main`
   padding: 2em;
+  grid-area: main;
 `;
 
-const Footer = styled.footer``;
+const Footer = styled.footer`
+  background-color: #3c4646;
+  color: white;
+  grid-area: footer;
+`;
 
 export default Root;
