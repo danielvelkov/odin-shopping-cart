@@ -30,3 +30,18 @@ export async function getProduct(id) {
   let product = await response.json();
   return product;
 }
+
+export async function getProductsByCategory(category) {
+  let response = await fetch(
+    "https://fakestoreapi.com/products/category/" + category,
+  );
+  if (!response.ok)
+    throw new Response("Server error", {
+      status: response.status,
+      statusText: response.statusText,
+    });
+  let products = await response.json();
+  if (!products) products = [];
+
+  return products;
+}
