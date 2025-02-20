@@ -1,14 +1,18 @@
 import { useContext, useState } from "react";
 import shopLogo from "/src/assets/online-shop-svgrepo-com.svg";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useMatches } from "react-router-dom";
 import styled from "styled-components";
 import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
 import CategoriesList from "../components/categoriesList";
+import { RouteIds } from "../routes";
 
 const Root = () => {
   const [favorites, setFavorites] = useState([]);
   const { cartItems } = useContext(CartContext);
+
+  const matches = useMatches();
+  const currentRoute = matches[matches.length - 1];
 
   return (
     <RootLayout>
@@ -38,9 +42,7 @@ const Root = () => {
           </StyledLink>
         </Navbar>
       </Header>
-      <Sidebar>
-        <CategoriesList></CategoriesList>
-      </Sidebar>
+      <Sidebar>{getSidebar(currentRoute)}</Sidebar>
       <Main>
         <FavoritesContext value={{ favorites, setFavorites }}>
           <Outlet></Outlet>
@@ -49,6 +51,17 @@ const Root = () => {
       <Footer></Footer>
     </RootLayout>
   );
+};
+
+const getSidebar = (currentRoute) => {
+  switch (currentRoute.id) {
+    case RouteIds.Index:
+    case RouteIds.Products:
+    case RouteIds.ProductsByCategory:
+      return <CategoriesList></CategoriesList>;
+    default:
+      return <></>;
+  }
 };
 
 const RootLayout = styled.section`
@@ -122,6 +135,10 @@ const Sidebar = styled.aside`
   grid-area: aside;
   background-color: #f9fafb;
   height: 100%;
+
+  &:empty {
+    display: none;
+  }
 `;
 
 const Main = styled.main`
