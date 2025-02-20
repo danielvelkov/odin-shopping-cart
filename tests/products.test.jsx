@@ -8,7 +8,10 @@ import { createRoutesStub } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
-import { loader as productsLoader } from "../src/routes/products";
+import {
+  loader as productsLoader,
+  categoryProductsLoader,
+} from "../src/routes/products";
 import { loader as productLoader } from "../src/routes/product";
 
 // Mock API:
@@ -21,6 +24,12 @@ const server = setupServer(
     const product = mockProducts.find((x) => x.id === Number(productId));
     if (!product) throw new Error("No such product");
     return HttpResponse.json(product);
+  }),
+  http.get("https://fakestoreapi.com/products/category/:category", (req) => {
+    const { category } = req.params;
+    const products = mockProducts.filter((p) => p.category === category);
+    if (!products) throw new Error("No products for category:" + category);
+    return HttpResponse.json(products);
   }),
 );
 
@@ -47,6 +56,15 @@ describe("Products page", () => {
         </CartProvider>
       ),
       loader: productLoader,
+    },
+    {
+      path: "/products/categories/:category",
+      Component: () => (
+        <CartProvider>
+          <Products />
+        </CartProvider>
+      ),
+      loader: categoryProductsLoader,
     },
   ]);
 
@@ -81,6 +99,41 @@ describe("Products page", () => {
     expect(await screen.findByText(/1 result/i)).toBeInTheDocument();
     expect(await screen.findByText(mockProducts[0].title)).toBeInTheDocument();
     expect(screen.queryByText(mockProducts[1].title)).toBeNull();
+  });
+
+  test("When navigating from a selected category, only products within that category are shown", async () => {
+    const productsPerCategoriesMap = mockProducts.reduce((map, p) => {
+      map.set(p.category, (map.get(p.category) || 0) + 1);
+      return map;
+    }, new Map());
+
+    const categoryWithMostProducts = [
+      ...productsPerCategoriesMap.entries(),
+    ].reduce((max, curr) => (curr[1] > max[1] ? curr : max))[0];
+
+    render(
+      <ProductsStub
+        initialEntries={[
+          "/products/categories/" + encodeURI(categoryWithMostProducts),
+        ]}
+      ></ProductsStub>,
+    );
+    const productList = await screen.findByRole("list");
+    const productItems =
+      await within(productList).findAllByLabelText(/product/i);
+    expect(productItems).toHaveLength(
+      mockProducts.filter((p) => p.category === categoryWithMostProducts)
+        .length,
+    );
+  });
+
+  test('When navigating from an unknown category, "no results for" message is shown', async () => {
+    render(
+      <ProductsStub
+        initialEntries={["/products/categories/loremupsumfoobar"]}
+      ></ProductsStub>,
+    );
+    expect(await screen.findByText(/no results for/i)).toBeInTheDocument();
   });
 
   // i don't think this is a unit test. More like an integration test. Also how can you tell if its on the
