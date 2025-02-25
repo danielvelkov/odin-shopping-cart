@@ -46,6 +46,7 @@ const MultiRangeSlider = ({
   return (
     <Wrapper>
       <input
+        aria-label="slider left thumb"
         type="range"
         min={min}
         max={max}
@@ -61,6 +62,7 @@ const MultiRangeSlider = ({
         style={{ zIndex: minValue > max - 100 && "5" }}
       />
       <input
+        aria-label="slider right thumb"
         type="range"
         min={min}
         max={max}

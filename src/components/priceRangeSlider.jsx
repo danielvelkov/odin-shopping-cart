@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Form } from "react-router-dom";
 import styled from "styled-components";
 import MultiRangeSlider from "./multiRangeSlider";
+import { useEffect, useState } from "react";
 
 const PriceRangeSlider = ({
   min = 1,
@@ -12,53 +13,90 @@ const PriceRangeSlider = ({
   handleToggle,
   handleChange,
 }) => {
+  // Create local state to manage input values for controlled component behavior
+  const [localMin, setLocalMin] = useState(minPrice);
+  const [localMax, setLocalMax] = useState(maxPrice);
+
+  // Keep local state in sync with props
+  useEffect(() => {
+    setLocalMin(minPrice);
+    setLocalMax(maxPrice);
+  }, [minPrice, maxPrice]);
+
+  // Handle min input change
+  const handleMinChange = (e) => {
+    const value = Number(e.target.value);
+    // Enforce constraints
+    const constrainedValue = Math.max(min, Math.min(value, localMax - 1));
+    setLocalMin(constrainedValue);
+    handleChange({ min: constrainedValue, max: localMax });
+  };
+
+  // Handle max input change
+  const handleMaxChange = (e) => {
+    const value = Number(e.target.value);
+    // Enforce constraints
+    const constrainedValue = Math.min(max, Math.max(value, localMin + 1));
+    setLocalMax(constrainedValue);
+    handleChange({ min: localMin, max: constrainedValue });
+  };
+
   return (
     <Wrapper>
       <div className="filter-toggle">
-        <input type="checkbox" checked={active} onChange={handleToggle}></input>
-        <h4>Price Range</h4>
+        <input
+          type="checkbox"
+          aria-labelledby="price-range-heading"
+          checked={active}
+          onChange={handleToggle}
+        ></input>
+        <h4 id="price-range-heading">Price Range</h4>
       </div>
       <Form action="/products">
         <MultiRangeSlider
           min={min}
           max={max}
-          minValue={minPrice}
-          maxValue={maxPrice}
-          onChange={handleChange}
+          minValue={localMin}
+          maxValue={localMax}
+          onChange={({ min: newMin, max: newMax }) => {
+            setLocalMin(newMin);
+            setLocalMax(newMax);
+            handleChange({ min: newMin, max: newMax });
+          }}
           showValues={false}
-        ></MultiRangeSlider>
-        <div className="input-group">
-          <label htmlFor="minPrice">
+        />
+        <div className="input-groups">
+          <div className="input-group">
+            <label htmlFor="minPrice" className="sr-only">
+              Minimum Price
+            </label>
             <input
               type="number"
+              id="minPrice"
               name="minPrice"
-              max={maxPrice - 1}
+              max={localMax - 1}
               min={min}
               step="any"
-              value={minPrice}
-              onChange={(e) => {
-                let value = Math.min(Number(e.target.value), maxPrice - 1);
-                value = Math.max(min, value);
-                handleChange({ min: value, max: maxPrice });
-              }}
+              value={localMin}
+              onChange={handleMinChange}
             />
-          </label>
+          </div>
           <span>-</span>
-          <label htmlFor="maxPrice">
+          <div className="input-group">
+            <label htmlFor="maxPrice" className="sr-only">
+              Maximum Price
+            </label>
             <input
               type="number"
+              id="maxPrice"
               name="maxPrice"
               max={max}
-              min={minPrice + 1}
+              min={localMin + 1}
               step="any"
-              value={maxPrice}
-              onChange={(e) => {
-                let value = Math.max(Number(e.target.value), minPrice + 1);
-                value = Math.min(value, max);
-                handleChange({ min: minPrice, max: value });
-              }}
+              value={localMax}
+              onChange={handleMaxChange}
             />
-          </label>
+          </div>
           <button type="submit" aria-label="Filter by price range">
             <i className="fas fa-greater-than"></i>
           </button>
@@ -78,7 +116,7 @@ const Wrapper = styled.section`
     gap: 0.5em;
   }
 
-  .input-group {
+  .input-groups {
     display: flex;
     width: 100%;
     align-items: baseline;
@@ -119,10 +157,10 @@ export default PriceRangeSlider;
 
 PriceRangeSlider.propTypes = {
   min: PropTypes.number,
-  max: PropTypes.number.isRequired,
+  max: PropTypes.number,
   minPrice: PropTypes.number,
   maxPrice: PropTypes.number,
   active: PropTypes.bool,
   handleToggle: PropTypes.func,
-  handleChange: PropTypes.func.isRequired,
+  handleChange: PropTypes.func,
 };
