@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Form } from "react-router-dom";
+import { Form, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import MultiRangeSlider from "./multiRangeSlider";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ const PriceRangeSlider = ({
   // Create local state to manage input values for controlled component behavior
   const [localMin, setLocalMin] = useState(minPrice);
   const [localMax, setLocalMax] = useState(maxPrice);
+  const location = useLocation();
 
   // Keep local state in sync with props
   useEffect(() => {
@@ -52,7 +53,7 @@ const PriceRangeSlider = ({
         ></input>
         <h4 id="price-range-heading">Price Range</h4>
       </div>
-      <Form action="/products">
+      <Form action={location.pathname}>
         <MultiRangeSlider
           min={min}
           max={max}
