@@ -19,9 +19,17 @@ export async function loader({ request }) {
   return { products, query: searchQuery };
 }
 
-export async function categoryProductsLoader({ params }) {
-  const products = await getProductsByCategory(params.category);
-  return { products };
+export async function categoryProductsLoader({ params, request }) {
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get("q");
+  const minProductPrice = url.searchParams.get("minPrice");
+  const maxProductPrice = url.searchParams.get("maxPrice");
+  let products = await getProductsByCategory(params.category, searchQuery);
+  if (minProductPrice)
+    products = products.filter((p) => p.price >= minProductPrice);
+  if (maxProductPrice)
+    products = products.filter((p) => p.price < maxProductPrice);
+  return { products, query: searchQuery };
 }
 
 const Products = () => {
