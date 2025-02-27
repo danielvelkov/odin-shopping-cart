@@ -26,6 +26,10 @@ const PriceRangeSlider = ({
 
   // Handle min input change
   const handleMinChange = (e) => {
+    if (e.target.value === "") {
+      setLocalMin("");
+      return;
+    }
     const value = Number(e.target.value);
     // Enforce constraints
     const constrainedValue = Math.max(min, Math.min(value, localMax - 1));
@@ -35,6 +39,10 @@ const PriceRangeSlider = ({
 
   // Handle max input change
   const handleMaxChange = (e) => {
+    if (e.target.value === "") {
+      setLocalMax("");
+      return;
+    }
     const value = Number(e.target.value);
     // Enforce constraints
     const constrainedValue = Math.min(max, Math.max(value, localMin + 1));
@@ -45,20 +53,21 @@ const PriceRangeSlider = ({
   return (
     <Wrapper>
       <div className="filter-toggle">
-        <input
-          type="checkbox"
-          aria-labelledby="price-range-heading"
-          checked={active}
-          onChange={handleToggle}
-        ></input>
-        <h4 id="price-range-heading">Price Range</h4>
+        <label>
+          Price Range
+          <input
+            type="checkbox"
+            checked={active}
+            onChange={handleToggle}
+          ></input>
+        </label>
       </div>
       <Form action={location.pathname}>
         <MultiRangeSlider
           min={min}
           max={max}
-          minValue={localMin}
-          maxValue={localMax}
+          minValue={localMin === "" ? min : localMin}
+          maxValue={localMax === "" ? max : localMax}
           onChange={({ min: newMin, max: newMax }) => {
             setLocalMin(newMin);
             setLocalMax(newMax);
@@ -76,7 +85,7 @@ const PriceRangeSlider = ({
               id="minPrice"
               name="minPrice"
               max={localMax - 1}
-              min={min}
+              // min={min}
               step="any"
               value={localMin}
               onChange={handleMinChange}
@@ -113,8 +122,13 @@ const Wrapper = styled.section`
   padding: 2em;
 
   .filter-toggle {
-    display: flex;
-    gap: 0.5em;
+    padding: 1em 0em;
+    label {
+      display: flex;
+      gap: 0.5em;
+      flex-direction: row-reverse;
+      justify-content: start;
+    }
   }
 
   .input-groups {

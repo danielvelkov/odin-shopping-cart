@@ -67,7 +67,7 @@ const Products = () => {
         </span>
       </SearchBar>
       {products.length ? (
-        <CardList>
+        <CardList data-testid="product list">
           {products.map((product) => (
             <li
               aria-label={product.title + " product"}

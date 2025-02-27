@@ -52,19 +52,22 @@ describe("Price Range Slider", () => {
   test(`entered min value defaults to the max value minus 1, if it's bigger than the max value`, async () => {
     render(<RouterProvider router={router} />);
     const minSpinButton = screen.getByRole("spinbutton", { name: /min/i });
-
     const user = userEvent.setup();
+
+    await user.clear(minSpinButton);
     await user.type(minSpinButton, `999999`);
 
     expect(minSpinButton.value).toBe((startingMaximum - 1).toString());
   });
 
-  test(`entered max value defaults to the min value plus 1, if cleared`, async () => {
+  test(`entered max value defaults to the min value plus 1, if it's smaller than the min value`, async () => {
     render(<RouterProvider router={router} />);
     const maxSpinButton = screen.getByRole("spinbutton", { name: /max/i });
-
     const user = userEvent.setup();
+
     await user.clear(maxSpinButton);
+    await user.type(maxSpinButton, "1");
+
     expect(maxSpinButton.value).toBe((startingMinimum + 1).toString());
   });
 });
