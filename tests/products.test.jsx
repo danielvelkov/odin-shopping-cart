@@ -70,7 +70,7 @@ describe("Products page", () => {
 
   test("Shows the available products", async () => {
     render(<ProductsStub initialEntries={["/products"]}></ProductsStub>);
-    const productList = await screen.findByRole("list");
+    const productList = await screen.findByTestId("product list");
     const productItems =
       await within(productList).findAllByLabelText(/product/i);
     expect(productItems).toHaveLength(mockProducts.length);
@@ -118,7 +118,7 @@ describe("Products page", () => {
         ]}
       ></ProductsStub>,
     );
-    const productList = await screen.findByRole("list");
+    const productList = await screen.findByTestId("product list");
     const productItems =
       await within(productList).findAllByLabelText(/product/i);
     expect(productItems).toHaveLength(

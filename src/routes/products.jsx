@@ -8,14 +8,28 @@ import { getProductsByCategory } from "../products";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
-  const query = url.searchParams.get("q");
-  const products = await getProducts(query);
-  return { products, query };
+  const searchQuery = url.searchParams.get("q");
+  const minProductPrice = url.searchParams.get("minPrice");
+  const maxProductPrice = url.searchParams.get("maxPrice");
+  let products = await getProducts(searchQuery);
+  if (minProductPrice)
+    products = products.filter((p) => p.price >= minProductPrice);
+  if (maxProductPrice)
+    products = products.filter((p) => p.price < maxProductPrice);
+  return { products, query: searchQuery };
 }
 
-export async function categoryProductsLoader({ params }) {
-  const products = await getProductsByCategory(params.category);
-  return { products };
+export async function categoryProductsLoader({ params, request }) {
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get("q");
+  const minProductPrice = url.searchParams.get("minPrice");
+  const maxProductPrice = url.searchParams.get("maxPrice");
+  let products = await getProductsByCategory(params.category, searchQuery);
+  if (minProductPrice)
+    products = products.filter((p) => p.price >= minProductPrice);
+  if (maxProductPrice)
+    products = products.filter((p) => p.price < maxProductPrice);
+  return { products, query: searchQuery };
 }
 
 const Products = () => {
@@ -23,12 +37,12 @@ const Products = () => {
   const { products, query } = useLoaderData();
 
   useEffect(() => {
-    document.getElementById("q").value = query || "";
+    document.getElementById("q").value = query ?? "";
   }, [query]);
 
   return (
     <>
-      <h2>Products</h2>
+      <h2>Our Products</h2>
       <SearchBar>
         <Form id="product-search">
           <input
@@ -37,23 +51,23 @@ const Products = () => {
             placeholder="Search"
             type="search"
             name="q"
-            defaultValue={query || ""}
+            defaultValue={query ?? ""}
           />
           <div id="search-spinner" aria-hidden hidden={true} />
           <button type="submit">
             <i className="fa fa-search"></i>
           </button>
         </Form>
-        <div className="search-results">
+        <span className="search-results">
           {products.length
             ? products.length === 1
               ? "1 result"
               : `${products.length} results`
             : "no results found"}
-        </div>
+        </span>
       </SearchBar>
       {products.length ? (
-        <CardList>
+        <CardList data-testid="product list">
           {products.map((product) => (
             <li
               aria-label={product.title + " product"}
@@ -61,7 +75,9 @@ const Products = () => {
               tabIndex={0}
               key={product.id}
               onKeyDown={(e) =>
-                e.key === "Enter" ? navigate("/products/" + product.id) : true
+                e.key === "Enter" && !e.target.matches("button, button *")
+                  ? navigate("/products/" + product.id)
+                  : true
               }
               onClick={(e) => {
                 if (e.target.matches("button, button *")) return;

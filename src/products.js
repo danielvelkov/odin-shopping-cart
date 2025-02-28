@@ -31,7 +31,7 @@ export async function getProduct(id) {
   return product;
 }
 
-export async function getProductsByCategory(category) {
+export async function getProductsByCategory(category, query) {
   let response = await fetch(
     "https://fakestoreapi.com/products/category/" + category,
   );
@@ -42,6 +42,12 @@ export async function getProductsByCategory(category) {
     });
   let products = await response.json();
   if (!products) products = [];
+
+  if (query)
+    products = matchSorter(products, query, {
+      keys: ["title"],
+      threshold: matchSorter.rankings.CONTAINS,
+    });
 
   return products;
 }

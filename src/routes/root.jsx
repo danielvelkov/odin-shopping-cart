@@ -6,6 +6,7 @@ import CartContext from "/src/contexts/cartContext";
 import FavoritesContext from "/src/contexts/favoritesContext";
 import CategoriesList from "../components/categoriesList";
 import { RouteIds } from "../routes";
+import ProductFilters from "./productFilters";
 
 const Root = () => {
   const [favorites, setFavorites] = useState([]);
@@ -56,9 +57,15 @@ const Root = () => {
 const getSidebar = (currentRoute) => {
   switch (currentRoute.id) {
     case RouteIds.Index:
+      return <CategoriesList></CategoriesList>;
     case RouteIds.Products:
     case RouteIds.ProductsByCategory:
-      return <CategoriesList></CategoriesList>;
+      return (
+        <>
+          <CategoriesList></CategoriesList>
+          <ProductFilters></ProductFilters>
+        </>
+      );
     default:
       return <></>;
   }
