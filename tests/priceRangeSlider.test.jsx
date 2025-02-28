@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import PriceRangeSlider from "../src/components/priceRangeSlider";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -7,6 +7,8 @@ import userEvent from "@testing-library/user-event";
 function noop() {}
 
 describe("Price Range Slider", () => {
+  let user;
+  let router;
   const sliderMinimum = 1;
   const sliderMaximum = 10000;
 
@@ -28,11 +30,39 @@ describe("Price Range Slider", () => {
     },
   ];
 
-  const router = createMemoryRouter(routes, { initialEntries: ["/"] });
-  test("Slider starts with its provided min and max values for prices", () => {
+  beforeEach(() => {
+    router = createMemoryRouter(routes);
     render(<RouterProvider router={router} />);
-    const minSlider = screen.getByRole("slider", { name: "slider left thumb" });
-    const maxSlider = screen.getByRole("slider", {
+    user = userEvent.setup();
+  });
+  afterEach(() => cleanup());
+
+  const setMinPrice = async (price) => {
+    const minInput = await screen.findByRole("spinbutton", { name: /min/i });
+    await user.clear(minInput);
+    await user.type(minInput, price.toString());
+    return minInput;
+  };
+
+  const setMaxPrice = async (price) => {
+    const maxInput = await screen.findByRole("spinbutton", { name: /max/i });
+    await user.clear(maxInput);
+    await user.type(maxInput, price.toString());
+    return maxInput;
+  };
+
+  const applyPriceFilter = async () => {
+    const submitSearch = await screen.findByRole("button", {
+      name: /filter by price/i,
+    });
+    await user.click(submitSearch);
+  };
+
+  test("Slider starts with its provided min and max values for prices", async () => {
+    const minSlider = await screen.findByRole("slider", {
+      name: "slider left thumb",
+    });
+    const maxSlider = await screen.findByRole("slider", {
       name: "slider right thumb",
     });
 
@@ -41,7 +71,6 @@ describe("Price Range Slider", () => {
   });
 
   test("Slider has input fields reflecting the slider values", () => {
-    render(<RouterProvider router={router} />);
     const minSpinButton = screen.getByRole("spinbutton", { name: /min/i });
     const maxSpinButton = screen.getByRole("spinbutton", { name: /max/i });
 
@@ -49,25 +78,27 @@ describe("Price Range Slider", () => {
     expect(maxSpinButton.value).toBe(startingMaximum.toString());
   });
 
-  test(`entered min value defaults to the max value minus 1, if it's bigger than the max value`, async () => {
-    render(<RouterProvider router={router} />);
-    const minSpinButton = screen.getByRole("spinbutton", { name: /min/i });
-    const user = userEvent.setup();
+  test.each([
+    [10, 700],
+    [1, 20],
+    [50, 100],
+  ])(
+    "changing the fields updates the slider [min: %i , max: %i]",
+    async (minInput, maxInput) => {
+      const minSpinButton = await setMinPrice(minInput);
+      const maxSpinButton = await setMaxPrice(maxInput);
 
-    await user.clear(minSpinButton);
-    await user.type(minSpinButton, `999999`);
+      await applyPriceFilter();
 
-    expect(minSpinButton.value).toBe((startingMaximum - 1).toString());
-  });
+      const minSlider = await screen.findByRole("slider", {
+        name: "slider left thumb",
+      });
+      const maxSlider = await screen.findByRole("slider", {
+        name: "slider right thumb",
+      });
 
-  test(`entered max value defaults to the min value plus 1, if it's smaller than the min value`, async () => {
-    render(<RouterProvider router={router} />);
-    const maxSpinButton = screen.getByRole("spinbutton", { name: /max/i });
-    const user = userEvent.setup();
-
-    await user.clear(maxSpinButton);
-    await user.type(maxSpinButton, "1");
-
-    expect(maxSpinButton.value).toBe((startingMinimum + 1).toString());
-  });
+      expect(minSlider.value).toBe(minSpinButton.value);
+      expect(maxSlider.value).toBe(maxSpinButton.value);
+    },
+  );
 });

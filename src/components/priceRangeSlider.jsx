@@ -5,7 +5,7 @@ import MultiRangeSlider from "./multiRangeSlider";
 import { useEffect, useState } from "react";
 
 const PriceRangeSlider = ({
-  min = 1,
+  min = 0,
   max = 10000,
   active,
   minPrice,
@@ -30,7 +30,11 @@ const PriceRangeSlider = ({
       setLocalMin("");
       return;
     }
-    const value = Number(e.target.value);
+    const value = Math.abs(Number(e.target.value));
+    if (value > localMax) {
+      setLocalMin(value);
+      return;
+    }
     // Enforce constraints
     const constrainedValue = Math.max(min, Math.min(value, localMax - 1));
     setLocalMin(constrainedValue);
@@ -43,12 +47,19 @@ const PriceRangeSlider = ({
       setLocalMax("");
       return;
     }
-    const value = Number(e.target.value);
+    const value = Math.abs(Number(e.target.value));
+    if (value < localMin) {
+      setLocalMax(value);
+      return;
+    }
     // Enforce constraints
     const constrainedValue = Math.min(max, Math.max(value, localMin + 1));
     setLocalMax(constrainedValue);
     handleChange({ min: localMin, max: constrainedValue });
   };
+
+  const sliderMinValue = Math.min(localMin ?? min, max);
+  const sliderMaxValue = Math.min(localMax ?? max, max);
 
   return (
     <Wrapper>
@@ -66,8 +77,8 @@ const PriceRangeSlider = ({
         <MultiRangeSlider
           min={min}
           max={max}
-          minValue={localMin === "" ? min : localMin}
-          maxValue={localMax === "" ? max : localMax}
+          minValue={sliderMinValue}
+          maxValue={sliderMaxValue}
           onChange={({ min: newMin, max: newMax }) => {
             setLocalMin(newMin);
             setLocalMax(newMax);
@@ -85,7 +96,7 @@ const PriceRangeSlider = ({
               id="minPrice"
               name="minPrice"
               max={localMax - 1}
-              // min={min}
+              min={min}
               step="any"
               value={localMin}
               onChange={handleMinChange}
@@ -152,6 +163,9 @@ const Wrapper = styled.section`
     /* Firefox */
     input[type="number"] {
       -moz-appearance: textfield;
+      &:invalid {
+        border-color: red;
+      }
     }
 
     button {

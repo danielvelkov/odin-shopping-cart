@@ -3,7 +3,7 @@ import PriceRangeSlider from "../components/priceRangeSlider";
 import useDebounce from "../hooks/useDebounce";
 import { useEffect, useState } from "react";
 
-const MIN_PRICE_LIMIT = 1;
+const MIN_PRICE_LIMIT = 0;
 const MAX_PRICE_LIMIT = 10000;
 
 const ProductFilters = () => {
