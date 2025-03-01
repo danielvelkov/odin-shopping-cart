@@ -8,7 +8,7 @@ export const mockProducts = [
     category: "health & personal care",
     image: "https://example.com/img/bamboo_toothbrush.jpg",
     rating: {
-      rate: 4.8,
+      rate: 2.8,
       count: 150,
     },
   },
@@ -21,7 +21,7 @@ export const mockProducts = [
     category: "electronics",
     image: "https://example.com/img/noise_cancelling_headphones.jpg",
     rating: {
-      rate: 4.5,
+      rate: 1.5,
       count: 220,
     },
   },
@@ -47,7 +47,7 @@ export const mockProducts = [
     category: "home & kitchen",
     image: "https://example.com/img/organic_cotton_bed_sheets.jpg",
     rating: {
-      rate: 4.6,
+      rate: 3.6,
       count: 95,
     },
   },
