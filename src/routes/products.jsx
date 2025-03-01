@@ -11,11 +11,14 @@ export async function loader({ request }) {
   const searchQuery = url.searchParams.get("q");
   const minProductPrice = url.searchParams.get("minPrice");
   const maxProductPrice = url.searchParams.get("maxPrice");
+  const minRating = url.searchParams.get("minRating");
+
   let products = await getProducts(searchQuery);
   if (minProductPrice)
     products = products.filter((p) => p.price >= minProductPrice);
   if (maxProductPrice)
     products = products.filter((p) => p.price < maxProductPrice);
+  if (minRating) products = products.filter((p) => p.rating.rate > minRating);
   return { products, query: searchQuery };
 }
 
@@ -24,11 +27,14 @@ export async function categoryProductsLoader({ params, request }) {
   const searchQuery = url.searchParams.get("q");
   const minProductPrice = url.searchParams.get("minPrice");
   const maxProductPrice = url.searchParams.get("maxPrice");
+  const minRating = url.searchParams.get("minRating");
+
   let products = await getProductsByCategory(params.category, searchQuery);
   if (minProductPrice)
     products = products.filter((p) => p.price >= minProductPrice);
   if (maxProductPrice)
     products = products.filter((p) => p.price < maxProductPrice);
+  if (minRating) products = products.filter((p) => p.rating.rate > minRating);
   return { products, query: searchQuery };
 }
 
