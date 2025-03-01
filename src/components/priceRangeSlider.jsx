@@ -130,7 +130,7 @@ const PriceRangeSlider = ({
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
-  padding: 2em;
+  padding: 1em 2em;
 
   .filter-toggle {
     padding: 1em 0em;
