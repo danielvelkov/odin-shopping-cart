@@ -17,7 +17,7 @@ const StarRating = ({ rating, votes }) => {
 
   return (
     <StarRatingWrapper>
-      <span role="img" aria-label={`Rating: ${rating} out of 5 stars`}>
+      <span role="img" title={`Rating: ${rating} out of 5 stars`}>
         {starRating}
       </span>
       <span className="muted" aria-label="votes count">
