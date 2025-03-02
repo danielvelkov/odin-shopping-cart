@@ -6,35 +6,34 @@ import { Card } from "../components/productCard";
 import { useEffect } from "react";
 import { getProductsByCategory } from "../products";
 
-export async function loader({ request }) {
-  const url = new URL(request.url);
-  const searchQuery = url.searchParams.get("q");
-  const minProductPrice = url.searchParams.get("minPrice");
-  const maxProductPrice = url.searchParams.get("maxPrice");
-  const minRating = url.searchParams.get("minRating");
-
-  let products = await getProducts(searchQuery);
+function filterProductsBySearchParams(products, searchParams) {
+  const minProductPrice = searchParams.get("minPrice");
+  const maxProductPrice = searchParams.get("maxPrice");
+  const minRating = searchParams.get("minRating");
   if (minProductPrice)
     products = products.filter((p) => p.price >= minProductPrice);
   if (maxProductPrice)
     products = products.filter((p) => p.price < maxProductPrice);
   if (minRating) products = products.filter((p) => p.rating.rate > minRating);
+
+  return products;
+}
+
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get("q");
+
+  let products = await getProducts(searchQuery);
+  products = filterProductsBySearchParams(products, url.searchParams);
   return { products, query: searchQuery };
 }
 
 export async function categoryProductsLoader({ params, request }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get("q");
-  const minProductPrice = url.searchParams.get("minPrice");
-  const maxProductPrice = url.searchParams.get("maxPrice");
-  const minRating = url.searchParams.get("minRating");
 
   let products = await getProductsByCategory(params.category, searchQuery);
-  if (minProductPrice)
-    products = products.filter((p) => p.price >= minProductPrice);
-  if (maxProductPrice)
-    products = products.filter((p) => p.price < maxProductPrice);
-  if (minRating) products = products.filter((p) => p.rating.rate > minRating);
+  products = filterProductsBySearchParams(products, url.searchParams);
   return { products, query: searchQuery };
 }
 
