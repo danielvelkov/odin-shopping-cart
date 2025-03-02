@@ -1,10 +1,16 @@
-import { Form, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  Form,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
 import { getProducts } from "/src/products";
 import ProductCard from "/src/components/productCard";
 import styled from "styled-components";
 import { Card } from "../components/productCard";
 import { useEffect } from "react";
 import { getProductsByCategory } from "../products";
+import LoadingSpinner from "../components/loadingSpinner";
 
 function filterProductsBySearchParams(products, searchParams) {
   const minProductPrice = searchParams.get("minPrice");
@@ -39,6 +45,8 @@ export async function categoryProductsLoader({ params, request }) {
 
 const Products = () => {
   const navigate = useNavigate();
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
   const { products, query } = useLoaderData();
 
   useEffect(() => {
@@ -71,7 +79,12 @@ const Products = () => {
             : "no results found"}
         </span>
       </SearchBar>
-      {products.length ? (
+      {isNavigating ? (
+        <LoadingSection>
+          <LoadingSpinner></LoadingSpinner>
+          <p>Loading products...</p>
+        </LoadingSection>
+      ) : products.length ? (
         <CardList data-testid="product list">
           {products.map((product) => (
             <li
@@ -104,6 +117,13 @@ const Products = () => {
 };
 
 export default Products;
+
+const LoadingSection = styled.section`
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const CardList = styled.ul`
   list-style: none;
