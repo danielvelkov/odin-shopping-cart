@@ -11,11 +11,12 @@ import { Card } from "../components/productCard";
 import { useEffect } from "react";
 import { getProductsByCategory } from "../products";
 import LoadingSpinner from "../components/loadingSpinner";
+import { FilterNames } from "../constants/filterNames";
 
 function filterProductsBySearchParams(products, searchParams) {
-  const minProductPrice = searchParams.get("minPrice");
-  const maxProductPrice = searchParams.get("maxPrice");
-  const minRating = searchParams.get("minRating");
+  const minProductPrice = searchParams.get(FilterNames.MIN_PRICE);
+  const maxProductPrice = searchParams.get(FilterNames.MAX_PRICE);
+  const minRating = searchParams.get(FilterNames.MIN_RATING);
   if (minProductPrice)
     products = products.filter((p) => p.price >= minProductPrice);
   if (maxProductPrice)
@@ -56,7 +57,7 @@ const Products = () => {
   return (
     <>
       <h2>Our Products</h2>
-      <SearchBar>
+      <FilterBar>
         <Form id="product-search">
           <input
             id="q"
@@ -66,19 +67,18 @@ const Products = () => {
             name="q"
             defaultValue={query ?? ""}
           />
-          <div id="search-spinner" aria-hidden hidden={true} />
           <button type="submit">
             <i className="fa fa-search"></i>
           </button>
+          <span className="search-results">
+            {products.length
+              ? products.length === 1
+                ? "1 result"
+                : `${products.length} results`
+              : "no results found"}
+          </span>
         </Form>
-        <span className="search-results">
-          {products.length
-            ? products.length === 1
-              ? "1 result"
-              : `${products.length} results`
-            : "no results found"}
-        </span>
-      </SearchBar>
+      </FilterBar>
       {isNavigating ? (
         <LoadingSection>
           <LoadingSpinner></LoadingSpinner>
@@ -137,7 +137,7 @@ const CardList = styled.ul`
   }
 `;
 
-const SearchBar = styled.div`
+const FilterBar = styled.div`
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -163,6 +163,7 @@ const SearchBar = styled.div`
   }
 
   .search-results {
+    margin-left: 1em;
     color: #666;
   }
 `;

@@ -3,6 +3,7 @@ import PriceRangeSlider from "../components/priceRangeSlider";
 import useDebounce from "../hooks/useDebounce";
 import { useEffect, useState } from "react";
 import StarRatingFilter from "../components/starRatingFilter";
+import { FilterNames } from "../constants/filterNames";
 
 const MIN_PRICE_LIMIT = 0;
 const MAX_PRICE_LIMIT = 10000;
@@ -11,8 +12,9 @@ const DEFAULT_MIN_RATING = 0;
 const ProductFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isPriceSliderActive =
-    searchParams.has("minPrice") || searchParams.has("maxPrice");
-  const isRatingFilterActive = searchParams.has("minRating");
+    searchParams.has(FilterNames.MIN_PRICE) ||
+    searchParams.has(FilterNames.MAX_PRICE);
+  const isRatingFilterActive = searchParams.has(FilterNames.MIN_RATING);
 
   const [minPrice, setMinPrice] = useState(MIN_PRICE_LIMIT);
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE_LIMIT);
@@ -22,8 +24,8 @@ const ProductFilters = () => {
     if (isPriceSliderActive)
       setSearchParams((prev) => {
         const newParams = new URLSearchParams(prev);
-        newParams.set("minPrice", min);
-        newParams.set("maxPrice", max);
+        newParams.set(FilterNames.MIN_PRICE, min);
+        newParams.set(FilterNames.MAX_PRICE, max);
         return newParams;
       });
   });
@@ -32,16 +34,20 @@ const ProductFilters = () => {
     if (isRatingFilterActive)
       setSearchParams((prev) => {
         const newParams = new URLSearchParams(prev);
-        newParams.set("minRating", minRating);
+        newParams.set(FilterNames.MIN_RATING, minRating);
         return newParams;
       });
   });
 
   useEffect(() => {
-    setMinPrice(Number(searchParams.get("minPrice") ?? MIN_PRICE_LIMIT));
-    setMaxPrice(Number(searchParams.get("maxPrice") ?? MAX_PRICE_LIMIT));
+    setMinPrice(
+      Number(searchParams.get(FilterNames.MIN_PRICE) ?? MIN_PRICE_LIMIT),
+    );
+    setMaxPrice(
+      Number(searchParams.get(FilterNames.MAX_PRICE) ?? MAX_PRICE_LIMIT),
+    );
     setMinStarRating(
-      Number(searchParams.get("minRating") ?? DEFAULT_MIN_RATING),
+      Number(searchParams.get(FilterNames.MIN_RATING) ?? DEFAULT_MIN_RATING),
     );
   }, [searchParams]);
 
@@ -60,11 +66,11 @@ const ProductFilters = () => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       if (e.target.checked) {
-        newParams.set("minPrice", minPrice);
-        newParams.set("maxPrice", maxPrice);
+        newParams.set(FilterNames.MIN_PRICE, minPrice);
+        newParams.set(FilterNames.MAX_PRICE, maxPrice);
       } else {
-        newParams.delete("minPrice");
-        newParams.delete("maxPrice");
+        newParams.delete(FilterNames.MIN_PRICE);
+        newParams.delete(FilterNames.MAX_PRICE);
       }
       return newParams;
     });
@@ -74,9 +80,9 @@ const ProductFilters = () => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       if (e.target.checked) {
-        newParams.set("minRating", minStarRating);
+        newParams.set(FilterNames.MIN_RATING, minStarRating);
       } else {
-        newParams.delete("minRating");
+        newParams.delete(FilterNames.MIN_RATING);
       }
       return newParams;
     });
@@ -94,6 +100,7 @@ const ProductFilters = () => {
         handleChange={handlePriceChange}
       />
       <StarRatingFilter
+        active={isRatingFilterActive}
         selectedRating={minStarRating}
         minStars={1}
         maxStars={5}
