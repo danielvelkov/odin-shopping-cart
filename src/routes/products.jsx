@@ -6,17 +6,21 @@ import {
   useNavigation,
   useSearchParams,
 } from "react-router-dom";
-import { getProducts } from "/src/products";
 import ProductCard from "/src/components/productCard";
 import styled from "styled-components";
 import { Card } from "../components/productCard";
 import { useEffect } from "react";
-import { getProductsByCategory } from "../products";
+import {
+  getPaginatedProducts,
+  getProducts,
+  getProductsByCategory,
+} from "../products";
 import LoadingSpinner from "../components/loadingSpinner";
 import { FilterNames } from "../constants/filterNames";
 import CheckmarkButton from "../components/checkmarkButton";
 import { ProductSortingNames } from "../constants/productSortingNames";
 import { camelCaseToWords } from "../utils/stringCaseConverter";
+import Pagination from "../components/pagination";
 
 function filterProductsBySearchParams(products, searchParams) {
   const minProductPrice = searchParams.get(FilterNames.MIN_PRICE);
@@ -54,30 +58,58 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get("q");
   const sortingType = url.searchParams.get("sort");
+  const pageNumber = url.searchParams.get(FilterNames.PAGE) ?? 1;
+  const pageSize = url.searchParams.get(FilterNames.PAGE_SIZE) ?? 10;
+  let { products, pages } = getPaginatedProducts(
+    await getProducts(searchQuery, pageSize, pageNumber),
+    pageSize,
+    pageNumber,
+  );
 
-  let products = await getProducts(searchQuery);
   products = filterProductsBySearchParams(products, url.searchParams);
   products = sortProducts(products, sortingType);
-  return { products, query: searchQuery, sorting: sortingType };
+  return {
+    products,
+    query: searchQuery,
+    sorting: sortingType,
+    pageSize,
+    pageNumber,
+    pages,
+  };
 }
 
 export async function categoryProductsLoader({ params, request }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get("q");
   const sortingType = url.searchParams.get("sort");
+  const pageNumber = url.searchParams.get(FilterNames.PAGE) ?? 1;
+  const pageSize = url.searchParams.get(FilterNames.PAGE_SIZE) ?? PAGE_SIZES[2];
 
-  let products = await getProductsByCategory(params.category, searchQuery);
+  let { products, pages } = getPaginatedProducts(
+    await getProductsByCategory(params.category, searchQuery),
+    pageSize,
+    pageNumber,
+  );
+
   products = filterProductsBySearchParams(products, url.searchParams);
   products = sortProducts(products, sortingType);
-  return { products, query: searchQuery, sorting: sortingType };
+  return {
+    products,
+    query: searchQuery,
+    sorting: sortingType,
+    pageSize,
+    pageNumber,
+    pages,
+  };
 }
 
 const Products = () => {
   const navigate = useNavigate();
   const navigation = useNavigation();
   const location = useLocation();
-  const { products, query, sorting } = useLoaderData();
-  const [searchParams] = useSearchParams();
+  const { products, query, sorting, pageNumber, pages, pageSize } =
+    useLoaderData();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const isNavigating = Boolean(navigation.location);
 
@@ -100,6 +132,29 @@ const Products = () => {
     if (sorting !== sortingType)
       document.getElementById("sort-param").value = sortingType;
     else document.getElementById("sort-param").name = ""; //removes it
+  };
+
+  const handlePageSelect = ({ page }) => {
+    if (page === pageNumber) return;
+    else
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
+        newParams.set(FilterNames.PAGE, page);
+        newParams.set(FilterNames.PAGE_SIZE, pageSize);
+        return newParams;
+      });
+  };
+
+  const handlePageSizeChange = (e) => {
+    const value = e.target.value;
+    if (value === pageSize) return;
+    else
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
+        newParams.set(FilterNames.PAGE, 1);
+        newParams.set(FilterNames.PAGE_SIZE, value);
+        return newParams;
+      });
   };
 
   return (
@@ -147,27 +202,51 @@ const Products = () => {
           <p>Loading products...</p>
         </LoadingSection>
       ) : products.length ? (
-        <CardList data-testid="product list">
-          {products.map((product) => (
-            <li
-              aria-label={product.title + " product"}
-              role="link"
-              tabIndex={0}
-              key={product.id}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.target.matches("button, button *")
-                  ? navigate("/products/" + product.id)
-                  : true
-              }
-              onClick={(e) => {
-                if (e.target.matches("button, button *")) return;
-                else navigate("/products/" + product.id);
-              }}
-            >
-              <ProductCard product={product}></ProductCard>
-            </li>
-          ))}
-        </CardList>
+        <>
+          <CardList data-testid="product list">
+            {products.map((product) => (
+              <li
+                aria-label={product.title + " product"}
+                role="link"
+                tabIndex={0}
+                key={product.id}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && !e.target.matches("button, button *")
+                    ? navigate("/products/" + product.id)
+                    : true
+                }
+                onClick={(e) => {
+                  if (e.target.matches("button, button *")) return;
+                  else navigate("/products/" + product.id);
+                }}
+              >
+                <ProductCard product={product}></ProductCard>
+              </li>
+            ))}
+          </CardList>
+          <section
+            style={{
+              fontSize: "1.1em",
+              display: "flex",
+              gap: "0.5em",
+              alignItems: "baseline",
+            }}
+          >
+            <span>Items per page:</span>
+            <select defaultValue={pageSize} onChange={handlePageSizeChange}>
+              {PAGE_SIZES.map((ps) => (
+                <option key={"pageSize-" + ps} value={ps}>
+                  {ps}
+                </option>
+              ))}
+            </select>
+          </section>
+          <Pagination
+            page={+pageNumber}
+            pages={+pages}
+            handleChange={handlePageSelect}
+          ></Pagination>
+        </>
       ) : (
         <>
           <h2>No results for &quot;{query}&quot;</h2>
@@ -234,3 +313,5 @@ const FilterBar = styled.div`
     color: #666;
   }
 `;
+
+const PAGE_SIZES = [5, 10, 20];
