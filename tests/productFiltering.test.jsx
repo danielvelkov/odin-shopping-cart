@@ -64,18 +64,21 @@ describe("Product filtering functionality", () => {
   });
 
   const getDisplayedProducts = async () => {
-    try {
-      let productList;
-      productList = await screen.findByTestId("product list");
-      return await within(productList).findAllByLabelText(/product/i);
-    } catch (error) {
-      console.error(error);
-      const noResultsMessage = await screen.findByText(/no results for/i);
-      if (noResultsMessage) return [];
-      throw new Error(
-        "Testing product filtering failed: getDisplayedProducts()",
-      );
+    const productList = screen.queryByTestId("product list");
+
+    if (productList) {
+      const products = await within(productList).findAllByLabelText(/product/i);
+      if (products.length > 0) {
+        return products;
+      }
     }
+
+    const noResultsMessage = await screen.findByText(/no results for/i);
+    if (noResultsMessage) {
+      return [];
+    }
+
+    throw new Error("Testing product filtering failed: getDisplayedProducts()");
   };
 
   describe("Price Range Filter", () => {

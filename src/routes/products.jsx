@@ -161,7 +161,7 @@ const Products = () => {
     <>
       <h2>Our Products</h2>
       <FilterBar>
-        <Form id="product-search" onSubmit={handleSubmit}>
+        <Form data-testid="product-search" onSubmit={handleSubmit}>
           <input
             id="q"
             aria-label="Search products"
@@ -182,7 +182,7 @@ const Products = () => {
           </span>
         </Form>
 
-        <Form id="product-sort" onSubmit={handleSubmit}>
+        <Form data-testid="product-sort" onSubmit={handleSubmit}>
           <input type="hidden" id="sort-param" name="sort"></input>
           {Object.values(ProductSortingNames).map((value) => (
             <CheckmarkButton

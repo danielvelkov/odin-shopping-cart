@@ -14,6 +14,8 @@ import {
 } from "../src/routes/products";
 import { loader as productLoader } from "../src/routes/product";
 
+const DEBUG_PRODUCT_PAGE_ID = crypto.randomUUID();
+
 // Mock API:
 const server = setupServer(
   http.get("https://fakestoreapi.com/products", () => {
@@ -52,6 +54,7 @@ describe("Products page", () => {
       path: "/products/:productId",
       Component: () => (
         <CartProvider>
+          <div data-testid={DEBUG_PRODUCT_PAGE_ID} hidden></div>
           <Product />
         </CartProvider>
       ),
@@ -136,8 +139,7 @@ describe("Products page", () => {
     expect(await screen.findByText(/no results for/i)).toBeInTheDocument();
   });
 
-  // i don't think this is a unit test. More like an integration test. Also how can you tell if its on the
-  // product page. This is bull
+  // i don't think this is a unit test. More like an integration test.
   test("Clicking on a product navigates to that product's page", async () => {
     render(<ProductsStub initialEntries={["/products"]}></ProductsStub>);
     const user = userEvent.setup();
@@ -146,6 +148,9 @@ describe("Products page", () => {
     });
     await user.click(productHeading);
 
+    expect(
+      await screen.findByTestId(DEBUG_PRODUCT_PAGE_ID),
+    ).toBeInTheDocument();
     expect(
       await screen.findByRole("heading", {
         name: mockProducts[0].title,
