@@ -1,10 +1,11 @@
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import { getProduct } from "src/products";
 import StarRating from "src/components/starRating";
 import AddToCartButton from "src/components/addToCartButton";
 import AddToFavoritesButton from "src/components/addToFavoritesButton";
 import { USDollar } from "src/utils/priceFormatter";
+import BreadcrumbsNav from "../components/breadcrumbsNav";
 
 export async function loader({ params }) {
   const product = await getProduct(params.productId);
@@ -16,21 +17,33 @@ const Product = () => {
   const { rate, count } = product.rating;
 
   return (
-    <ProductWrapper>
-      <div className="image-container">
-        <img src={product.image}></img>
-      </div>
-      <div className="product-info">
-        <h2>{product.title}</h2>
-        <span className="product-price">{USDollar.format(product.price)}</span>
-        <StarRating rating={rate} votes={count}></StarRating>
-        <p>{product.description}</p>
-        <div className="button-list">
-          <AddToCartButton id={product.id}></AddToCartButton>
-          <AddToFavoritesButton id={product.id}></AddToFavoritesButton>
+    <>
+      <BreadcrumbsNav>
+        <Link to={"/"}>Home</Link>
+        <Link to={"/products"}>products</Link>
+        <Link to={"/products/categories/" + encodeURI(product.category)}>
+          {product.category}
+        </Link>
+        <Link to={"#"}>Product</Link>
+      </BreadcrumbsNav>
+      <ProductWrapper>
+        <div className="image-container">
+          <img src={product.image}></img>
         </div>
-      </div>
-    </ProductWrapper>
+        <div className="product-info">
+          <h2>{product.title}</h2>
+          <span className="product-price">
+            {USDollar.format(product.price)}
+          </span>
+          <StarRating rating={rate} votes={count}></StarRating>
+          <p>{product.description}</p>
+          <div className="button-list">
+            <AddToCartButton id={product.id}></AddToCartButton>
+            <AddToFavoritesButton id={product.id}></AddToFavoritesButton>
+          </div>
+        </div>
+      </ProductWrapper>
+    </>
   );
 };
 
