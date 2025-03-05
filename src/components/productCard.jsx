@@ -20,7 +20,9 @@ const ProductCard = ({ product }) => {
         <p className="text-body">{description}</p>
       </div>
       <div className="card-footer">
-        <span className="text-title">{USDollar.format(price)}</span>
+        <span className="text-title" aria-label="price(USD)">
+          {USDollar.format(price)}
+        </span>
         <div className="card-buttons">
           <AddToCartButton className={"card-button"} id={id}></AddToCartButton>
           <AddToFavoritesButton

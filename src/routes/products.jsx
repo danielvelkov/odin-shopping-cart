@@ -182,7 +182,11 @@ const Products = () => {
           </span>
         </Form>
 
-        <Form data-testid="product-sort" onSubmit={handleSubmit}>
+        <Form
+          data-testid="product-sort"
+          className="product-sorting-form"
+          onSubmit={handleSubmit}
+        >
           <input type="hidden" id="sort-param" name="sort"></input>
           {Object.values(ProductSortingNames).map((value) => (
             <CheckmarkButton
@@ -294,7 +298,7 @@ const FilterBar = styled.div`
       box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
     }
   }
-  #product-sort {
+  .product-sorting-form {
     display: flex;
     gap: 1em;
   }

@@ -3,8 +3,13 @@ import styled from "styled-components";
 
 const CheckmarkButton = ({ active, handleClick, children }) => {
   return (
-    <ButtonWrapper active={active.toString()} onClick={handleClick}>
-      {active && <i className="fa fa-check"></i>} {children}
+    <ButtonWrapper
+      aria-pressed={active}
+      active={active.toString()}
+      onClick={handleClick}
+    >
+      {active && <i aria-label="checkmark icon" className="fa fa-check"></i>}{" "}
+      {children}
     </ButtonWrapper>
   );
 };
