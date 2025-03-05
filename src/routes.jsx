@@ -8,6 +8,7 @@ import {
 import { loader as productLoader } from "./routes/product";
 import Product from "./routes/product";
 import Cart from "./routes/cart";
+import Favorites from "./routes/favorites";
 
 export const RouteIds = Object.freeze({
   Index: "index",
@@ -15,6 +16,7 @@ export const RouteIds = Object.freeze({
   ProductsByCategory: "products-categories",
   Product: "product",
   Cart: "cart",
+  Favorites: "favorites",
 });
 
 const routes = [
@@ -46,6 +48,11 @@ const routes = [
         path: "/cart",
         id: RouteIds.Cart,
         element: <Cart></Cart>,
+      },
+      {
+        path: "/favorites",
+        id: RouteIds.Favorites,
+        element: <Favorites></Favorites>,
       },
     ],
   },
