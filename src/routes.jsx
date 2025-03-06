@@ -9,9 +9,11 @@ import { loader as productLoader } from "./routes/product";
 import Product from "./routes/product";
 import Cart from "./routes/cart";
 import Favorites from "./routes/favorites";
+import Home from "./routes/home";
 
 export const RouteIds = Object.freeze({
   Index: "index",
+  Home: "home",
   Products: "products",
   ProductsByCategory: "products-categories",
   Product: "product",
@@ -26,6 +28,7 @@ const routes = [
     element: <Root></Root>,
     errorElement: <ErrorPage></ErrorPage>,
     children: [
+      { index: true, id: RouteIds.Home, element: <Home></Home> },
       {
         path: "/products",
         id: RouteIds.Products,
