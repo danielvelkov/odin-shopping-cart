@@ -1,6 +1,10 @@
-# top-react-template
+# odin-shopping-cart
+
+# [Live Demo]()
 
 ## Overview
+
+Created on the template `top-react-template`.
 
 `top-react-template` is a modern React project template using Vite. This template includes several popular technologies and tools to streamline development and ensure a robust and maintainable codebase.
 Based on the development tools and practices presented in The Odin Project for the Fullstack JS developer path.
