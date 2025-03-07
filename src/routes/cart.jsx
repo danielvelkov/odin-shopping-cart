@@ -137,30 +137,32 @@ const Cart = () => {
 
       {listedItems.length > 0 ? (
         <>
-          <CartItemsTable>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {listedItems.map((item) => {
-                // for some reason listedItems has undefined items inside in the beginning
-                if (item.id) return renderCartItem(item);
-              })}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row" colSpan="3">
-                  Total
-                </th>
-                <td>{USDollar.format(total)}</td>
-              </tr>
-            </tfoot>
-          </CartItemsTable>
+          <TableContainer>
+            <CartItemsTable>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listedItems.map((item) => {
+                  // for some reason listedItems has undefined items inside in the beginning
+                  if (item.id) return renderCartItem(item);
+                })}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row" colSpan="3">
+                    Total
+                  </th>
+                  <td>{USDollar.format(total)}</td>
+                </tr>
+              </tfoot>
+            </CartItemsTable>
+          </TableContainer>
           <button className="checkout-button">
             Checkout <i className="fa fa-shopping-bag"></i>
           </button>
@@ -210,10 +212,12 @@ const CartPage = styled.div`
     font-weight: 600;
     border-radius: 5px;
     max-width: 333px;
-    align-self: flex-end;
 
     &:hover {
       background-color: #ffa600d3;
+    }
+    @media screen and (min-width: 600px) {
+      align-self: flex-end;
     }
   }
 
@@ -225,19 +229,25 @@ const CartPage = styled.div`
   }
 `;
 
+const TableContainer = styled.div`
+  overflow-x: auto; /* Enable horizontal scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+`;
+
 const CartItemsTable = styled.table`
   border-collapse: separate;
   border-spacing: 0;
-  width: 100%;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
 
   th,
   td {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid #eee;
+    white-space: nowrap;
   }
 
   th {
@@ -261,6 +271,7 @@ const CartItemsTable = styled.table`
     .image-container {
       max-width: 100px;
       padding: 0.5rem;
+      min-width: 50px;
       background-color: #f9fafb;
     }
 

@@ -135,12 +135,19 @@ const ProductItem = styled.li`
   align-items: center;
   padding: 1em;
   border-bottom: 2px solid #eee;
+
+  @media screen and (max-width: 460px) {
+    flex-direction: column;
+    gap: 1em;
+    align-items: stretch;
+  }
 `;
 
 const ProductImage = styled.img`
   max-width: 100px;
   padding: 1em;
   object-fit: contain;
+  align-self: center;
 `;
 
 const ProductInfo = styled.div`

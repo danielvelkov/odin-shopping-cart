@@ -24,25 +24,37 @@ const HeroWrapper = styled.section`
   width: 100%;
   background: url(${hero_img});
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
   display: flex;
   align-items: center;
-  justify-content: end;
+  @media screen and (min-width: 1300px) {
+    justify-content: end;
+  }
+  @media screen and (max-width: 620px) {
+    justify-content: center;
+  }
 `;
 
 const HeroContent = styled.div`
-  margin-bottom: 10ch;
-  margin-right: 10ch;
   max-width: 30ch;
-  display: flex;
-  flex-direction: column;
   text-align: center;
-  font-size: x-large;
   h2 {
     margin: 0;
     padding: 0;
   }
-  gap: 0.5em;
+  margin: 2vmax;
+  font-size: large;
+
+  @media screen and (min-width: 1100px) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    font-size: larger;
+  }
+  @media screen and (min-width: 1300px) {
+    font-size: x-large;
+    margin-right: 12vmax;
+  }
 `;
 
 const ButtonLink = styled(Link)`

@@ -126,12 +126,6 @@ const RootLayout = styled.section`
 
   @media screen and (max-width: 650px) {
     grid-template-rows: auto 1fr 1fr auto;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header  header"
-      "aside main "
-      "aside main "
-      "footer footer ";
   }
 `;
 
