@@ -1,3 +1,4 @@
+import "./matchMedia.mock";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import Root from "../src/routes/root";

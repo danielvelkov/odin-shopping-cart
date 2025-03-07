@@ -41,7 +41,7 @@ export const Card = styled.article`
   flex-direction: column;
   justify-content: space-between;
 
-  max-width: 250px;
+  max-width: 300px;
   padding: 1em;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.12),

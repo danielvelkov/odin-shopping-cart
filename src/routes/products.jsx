@@ -279,6 +279,17 @@ const CardList = styled.ul`
 
   li > ${Card} {
     min-height: 100%;
+    @media screen and (max-width: 600px) {
+      min-width: 90vw;
+      max-height: fit-content;
+      .card-img {
+        img {
+          object-fit: contain;
+          width: 100vw;
+          height: 30vw;
+        }
+      }
+    }
   }
 `;
 
@@ -287,10 +298,17 @@ const FilterBar = styled.div`
   align-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.5em;
+  gap: 1em;
+
+  form:has(input[type="search"]) {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+  }
 
   form input[type="search"] {
-    min-width: 42ch;
+    width: clamp(42ch, 30vw, 52ch);
     padding: 0.5em 1em;
     border-radius: 1em;
     border: 1px solid gray;
@@ -298,8 +316,10 @@ const FilterBar = styled.div`
       box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
     }
   }
+
   .product-sorting-form {
     display: flex;
+    flex-wrap: wrap;
     gap: 1em;
   }
 
@@ -309,11 +329,10 @@ const FilterBar = styled.div`
     cursor: pointer;
     background-color: transparent;
     border: none;
-    margin-left: -3em;
+    margin-left: -4em;
   }
 
   .search-results {
-    margin-left: 1em;
     color: #666;
   }
 `;
