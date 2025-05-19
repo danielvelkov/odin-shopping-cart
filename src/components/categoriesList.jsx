@@ -20,6 +20,15 @@ const CategoriesList = () => {
     <Wrapper>
       <h3 className="list-title">Categories</h3>
       <List>
+        <li key={"All"}>
+          <StyledLink
+            to={"/products/"}
+            end
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            All
+          </StyledLink>
+        </li>
         {categories.map((c) => (
           <li key={c}>
             <StyledLink
